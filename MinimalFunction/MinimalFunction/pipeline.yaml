@@ -2,6 +2,7 @@ trigger:
   branches:
     include:
       - main
+      - dev
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -11,7 +12,7 @@ variables:
   project: 'MinimalFunction/MinimalFunction.csproj'
 
 stages:
-  - stage: "Build and deploy"
+  - stage: deploy
     jobs:
       - job: 
         displayName: "Build and deploy"
