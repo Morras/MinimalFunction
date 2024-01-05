@@ -1,0 +1,53 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  project: 'MinimalFunction/MinimalFunction.csproj'
+
+stages:
+  - stage: "Build and deploy"
+    jobs:
+      - job: 
+        displayName: "Build and deploy"
+        steps:
+          - task: UseDotNet@2
+            inputs:
+              version: '7.x'
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'publish'
+              publishWebProjects: false
+              projects: '$(project)'
+              arguments: '--runtime win-x64 --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
+            displayName: 'Publish solution'
+
+          - task: ArchiveFiles@2
+            displayName: "Archive files"
+            inputs:
+              rootFolderOrFile: "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)"
+              includeRootFolder: false
+              archiveFile: "$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip"
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
+              artifactName: 'drop'
+
+          # Azure Functions v2
+          # Update a function app with .NET, Python, JavaScript, PowerShell, Java based web applications.
+          - task: AzureFunctionApp@2
+            displayName: Deploy Azure Function
+            inputs:
+              connectedServiceNameARM: "MI-CostManagement-D-Owner"
+              appType: 'functionApp'
+              appName: "morasm-minimal-function"
+              package: '$(System.ArtifactsDirectory)/**/*.zip'
+              runtimeStack: 'DOTNET|7.0'
+              deploymentMethod: 'runFromPackage' # 'auto' | 'zipDeploy' | 'runFromPackage'. Required. Deployment method. Default: auto.
