@@ -17,14 +17,6 @@ stages:
       - job: 
         displayName: "Build and deploy"
         steps:
-          - task: CmdLine@2
-            inputs:
-              script: "dir"
-  
-          - task: CmdLine@2
-            inputs:
-              script: "pwd"
-            
           - task: UseDotNet@2
             inputs:
               version: '7.x'
