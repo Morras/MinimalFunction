@@ -20,10 +20,10 @@ stages:
           - task: CmdLine@2
             inputs:
               script: "dir"
-
-        - task: CmdLine@2
-          inputs:
-            script: "pwd"
+  
+          - task: CmdLine@2
+            inputs:
+              script: "pwd"
             
           - task: UseDotNet@2
             inputs:
