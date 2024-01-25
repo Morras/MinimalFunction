@@ -7,7 +7,7 @@ namespace CostOverview.App.api;
 
 class Program
 {
-    static async Task Main(string[] args)
+    static void Main(string[] args)
     {
         var host = new HostBuilder()
             .ConfigureFunctionsWorkerDefaults()
@@ -32,6 +32,6 @@ class Program
             })
             .Build();
 
-        await host.RunAsync();
+        host.Run();
     }
 }
